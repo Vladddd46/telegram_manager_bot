@@ -1,13 +1,13 @@
 import telebot
 from telebot import types
+import json
 
 '''
  * This is manager bot for telegram project.
  * ...
 '''
 
-bot = telebot.TeleBot("token")
-
+bot = telebot.TeleBot("1312682990:AAERtIGXkjIMbgyKx__6Tu-fZqabVk9imCs")
 
 @bot.message_handler(commands=['start'])
 def initialization(message):
@@ -17,33 +17,42 @@ def initialization(message):
     I can track you budget.\n And many many other thing...\n\
     Write /help for more details."
 
-    markup = types.ReplyKeyboardMarkup()
-    item_tasks = types.KeyboardButton('/tasks')
-    itembtna = types.KeyboardButton('a')
-    itembtnb = types.KeyboardButton('b')
-    itembtnc = types.KeyboardButton('c')
-    itembtnd = types.KeyboardButton('d')
+    with open("db.json", "r") as f:
+        data = json.load(f)
+    if (message.from_user.username not in data):
+        data[message.from_user.username] = {"tasks": ["t1", "t2", "t3"]}
+    with open("db.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+    markup     = types.ReplyKeyboardMarkup()
+    item_tasks = types.KeyboardButton('tasks')
+    itembtna   = types.KeyboardButton('a')
+    itembtnb   = types.KeyboardButton('b')
+    itembtnc   = types.KeyboardButton('c')
 
     markup.row(item_tasks, itembtna)
-    markup.row(itembtnb, itembtnc, itembtnd)
-
+    markup.row(itembtnb, itembtnc)
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
-@bot.message_handler(commands=['tasks'])
+
+
+@bot.message_handler(content_types=['text'])
 def tasks_menu(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2)
-    item_tasks_show   = types.KeyboardButton('/show_tasks')
-    item_tasks_add    = types.KeyboardButton('/add_task')
-    item_tasks_edit   = types.KeyboardButton('/edit_task')
-    item_tasks_remove = types.KeyboardButton('/remove_task')
-    markup.add(item_tasks_show, item_tasks_add, item_tasks_edit, item_tasks_remove)
-    bot.send_message(message.chat.id, "d", reply_markup=markup)
+    with open("db.json", "r") as f:
+        data = json.load(f)
+
+    tasks = data[message.from_user.username]["tasks"]
+    markup = telebot.types.InlineKeyboardMarkup()
+    for i in tasks:
+        button = telebot.types.InlineKeyboardButton(text=i, callback_data=i)
+        markup.add(button)
+
+
+    bot.send_message(message.chat.id, "You tasks:", reply_markup=markup)
 
 bot.polling()
 
-# markup = telebot.types.InlineKeyboardMarkup()
-# button = telebot.types.InlineKeyboardButton(text='CLick me', callback_data='add')
-# markup.add(button)
+
 # @bot.callback_query_handler(func=lambda call: True)
 # def query_handler(call):
 #     if call.data == 'add':
