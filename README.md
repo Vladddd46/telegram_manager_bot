@@ -1,1 +1,1 @@
-<h1>Manager bot in telegram</h1>
+<h1>Manager bot for telegram</h1>
