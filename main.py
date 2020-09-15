@@ -50,6 +50,17 @@ def tasks_menu(message):
 
     bot.send_message(message.chat.id, "You tasks:", reply_markup=markup)
 
+
+    markup1               = types.ReplyKeyboardMarkup(row_width=2)
+    add_task_btn          = types.KeyboardButton('add new task')
+    ramove_task_btn       = types.KeyboardButton('remove task')
+    back_to_main_menu_btn = types.KeyboardButton('back to main menu')
+
+
+    markup1.row(add_task_btn, ramove_task_btn)
+    markup1.row(back_to_main_menu_btn)
+    bot.send_message(message.chat.id, "Choose the option", reply_markup=markup1)
+
 bot.polling()
 
 
