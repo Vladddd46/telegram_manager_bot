@@ -7,6 +7,21 @@ import json
  * ...
 '''
 
+def json_open(file_name):
+    data = None
+    with open(file_name, "r") as f:
+        data = json.load(f)
+
+    if type(data) != dict:
+        print("Some error occured, while opening json file.")
+    return data
+
+def json_write(file_name, data):
+    with open(file_name, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+
 bot = telebot.TeleBot("1312682990:AAERtIGXkjIMbgyKx__6Tu-fZqabVk9imCs")
 
 @bot.message_handler(commands=['start'])
@@ -17,12 +32,10 @@ def initialization(message):
     I can track you budget.\n And many many other thing...\n\
     Write /help for more details."
 
-    with open("db.json", "r") as f:
-        data = json.load(f)
+    data = json_open("db.json")
     if (message.from_user.username not in data):
-        data[message.from_user.username] = {"tasks": ["t1", "t2", "t3"]}
-    with open("db.json", "w") as f:
-        json.dump(data, f, indent=2)
+        data[message.from_user.username] = {"tasks": {}}
+    json_write("db.json", data)
 
     markup     = types.ReplyKeyboardMarkup()
     item_tasks = types.KeyboardButton('tasks')
@@ -35,32 +48,44 @@ def initialization(message):
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
 
-
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(regexp="tasks")
 def tasks_menu(message):
-    with open("db.json", "r") as f:
-        data = json.load(f)
+    data = json_open("db.json")
 
     tasks = data[message.from_user.username]["tasks"]
     markup = telebot.types.InlineKeyboardMarkup()
     for i in tasks:
-        button = telebot.types.InlineKeyboardButton(text=i, callback_data=i)
+        button = telebot.types.InlineKeyboardButton(text=tasks[i], callback_data=i)
         markup.add(button)
 
 
-    bot.send_message(message.chat.id, "You tasks:", reply_markup=markup)
-
+    bot.send_message(message.chat.id, "Tasks need to be completed:", reply_markup=markup)
 
     markup1               = types.ReplyKeyboardMarkup(row_width=2)
     add_task_btn          = types.KeyboardButton('add new task')
     ramove_task_btn       = types.KeyboardButton('remove task')
     back_to_main_menu_btn = types.KeyboardButton('back to main menu')
-
-
     markup1.row(add_task_btn, ramove_task_btn)
     markup1.row(back_to_main_menu_btn)
-    bot.send_message(message.chat.id, "Choose the option", reply_markup=markup1)
 
+    bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup1)
+
+@bot.message_handler(regexp="add new task")
+def add_new_task(message):
+    markup = types.ForceReply(selective=False)
+    bot.send_message(message.chat.id, "Write new task:", reply_markup=markup)
+
+
+@bot.message_handler(content_types=["text"])
+def replies(message):
+    data = json_open("db.json")
+    try:
+        if message.reply_to_message.text == "Write new task:":
+            task_id = len(data[message.from_user.username]["tasks"]) + 1
+            data[message.from_user.username]["tasks"][task_id]  = message.text
+        json_write("db.json", data)
+    except:
+        pass
 bot.polling()
 
 
