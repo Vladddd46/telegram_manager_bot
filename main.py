@@ -2,13 +2,18 @@ import telebot
 from telebot import types
 import json
 from wrappers import *
+
+
 '''
- * This is manager bot for telegram project.
- * ...
+# texts module contains variables with texts sended by bot.
+# This is done to simplify editing of texts.
+# All variables from this module start with `txt_` prefix
 '''
+from texts import *
+
 
 bot = telebot.TeleBot("1312682990:AAERtIGXkjIMbgyKx__6Tu-fZqabVk9imCs")
-
+sessions = {}
 
 '''
 * Initialize user profile (only if it is already not initialized)
@@ -24,25 +29,27 @@ def user_profile_init(database_file, message):
 def main_menu(message):
     markup     = types.ReplyKeyboardMarkup()
     item_tasks = types.KeyboardButton('tasks')
-    itembtna   = types.KeyboardButton('a')
-    itembtnb   = types.KeyboardButton('b')
-    itembtnc   = types.KeyboardButton('c')
-    markup.row(item_tasks, itembtna)
-    markup.row(itembtnb, itembtnc)
+    markup.row(item_tasks)
 
     msg = "Choose the option below:"
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
 
+def task_close_menu(call):
+    markup           = types.ReplyKeyboardMarkup()
+    item_task_done   = types.KeyboardButton('done ✅')
+    item_task_failed = types.KeyboardButton('failed ⛔️')
+
+    markup.row(item_task_done, item_task_failed)
+    msg = "Task is: "
+    bot.send_message(call.message.chat.id, msg, reply_markup=markup)
+
+
+
 @bot.message_handler(commands=['start'])
 def initialization(message):
-    msg = "Hello!\nMy name is Karl and I am the manager bot.\n I want to be your assistant.\n\
-    I can help you structure all your task and notify you about deadlines.\n\
-    I can remind you about birthdays.\n\
-    I can track you budget.\n And many many other thing...\n\
-    Write /help for more details."
     user_profile_init("db.json", message)
-    bot.send_message(message.chat.id, msg)
+    bot.send_message(message.chat.id, txt_welcome_text)
     main_menu(message)
 
 
@@ -56,9 +63,9 @@ def list_user_tasks(message):
     tasks = data[message.from_user.username]["tasks"]
     markup = telebot.types.InlineKeyboardMarkup()
     for i in tasks:
-        button = telebot.types.InlineKeyboardButton(text=tasks[i], callback_data=i)
+        button = telebot.types.InlineKeyboardButton(text=str(i) + ". " + tasks[i], callback_data="task: " + str(i))
         markup.add(button)
-    bot.send_message(message.chat.id, "Tasks need to be completed:", reply_markup=markup)
+    bot.send_message(message.chat.id, "Okey, there is list of your tasks:", reply_markup=markup)
 
 
 @bot.message_handler(regexp="tasks")
@@ -96,11 +103,11 @@ def replies(message):
         pass
 
 
-    
+@bot.callback_query_handler(func=lambda call: True)
+def query_handler(call):
+
+    if call.data[0:6] == 'task: ':
+        task_close_menu(call)
+       
 bot.polling()
 
-
-# @bot.callback_query_handler(func=lambda call: True)
-# def query_handler(call):
-#     if call.data == 'add':
-#         bot.answer_callback_query(callback_query_id=call.id, text='Hello world')
