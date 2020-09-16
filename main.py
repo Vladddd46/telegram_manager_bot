@@ -1,28 +1,38 @@
 import telebot
 from telebot import types
 import json
-
+from wrappers import *
 '''
  * This is manager bot for telegram project.
  * ...
 '''
 
-def json_open(file_name):
-    data = None
-    with open(file_name, "r") as f:
-        data = json.load(f)
-
-    if type(data) != dict:
-        print("Some error occured, while opening json file.")
-    return data
-
-def json_write(file_name, data):
-    with open(file_name, "w") as f:
-        json.dump(data, f, indent=2)
-
-
-
 bot = telebot.TeleBot("1312682990:AAERtIGXkjIMbgyKx__6Tu-fZqabVk9imCs")
+
+
+'''
+* Initialize user profile (only if it is already not initialized)
+* when user starts bot (/start).
+'''
+def user_profile_init(database_file, message):
+    data = json_open(database_file)
+    if (message.from_user.username not in data):
+        data[message.from_user.username] = {"tasks": {}}
+    json_write(database_file, data)
+
+
+def main_menu(message):
+    markup     = types.ReplyKeyboardMarkup()
+    item_tasks = types.KeyboardButton('tasks')
+    itembtna   = types.KeyboardButton('a')
+    itembtnb   = types.KeyboardButton('b')
+    itembtnc   = types.KeyboardButton('c')
+    markup.row(item_tasks, itembtna)
+    markup.row(itembtnb, itembtnc)
+
+    msg = "Choose the option below:"
+    bot.send_message(message.chat.id, msg, reply_markup=markup)
+
 
 @bot.message_handler(commands=['start'])
 def initialization(message):
@@ -31,35 +41,29 @@ def initialization(message):
     I can remind you about birthdays.\n\
     I can track you budget.\n And many many other thing...\n\
     Write /help for more details."
+    user_profile_init("db.json", message)
+    bot.send_message(message.chat.id, msg)
+    main_menu(message)
 
+
+
+'''
+* lists user tasks in chat.
+* Sends them as inline keyboard.
+'''
+def list_user_tasks(message):
     data = json_open("db.json")
-    if (message.from_user.username not in data):
-        data[message.from_user.username] = {"tasks": {}}
-    json_write("db.json", data)
-
-    markup     = types.ReplyKeyboardMarkup()
-    item_tasks = types.KeyboardButton('tasks')
-    itembtna   = types.KeyboardButton('a')
-    itembtnb   = types.KeyboardButton('b')
-    itembtnc   = types.KeyboardButton('c')
-
-    markup.row(item_tasks, itembtna)
-    markup.row(itembtnb, itembtnc)
-    bot.send_message(message.chat.id, msg, reply_markup=markup)
-
-
-@bot.message_handler(regexp="tasks")
-def tasks_menu(message):
-    data = json_open("db.json")
-
     tasks = data[message.from_user.username]["tasks"]
     markup = telebot.types.InlineKeyboardMarkup()
     for i in tasks:
         button = telebot.types.InlineKeyboardButton(text=tasks[i], callback_data=i)
         markup.add(button)
-
-
     bot.send_message(message.chat.id, "Tasks need to be completed:", reply_markup=markup)
+
+
+@bot.message_handler(regexp="tasks")
+def tasks_menu(message):
+    list_user_tasks(message)
 
     markup1               = types.ReplyKeyboardMarkup(row_width=2)
     add_task_btn          = types.KeyboardButton('add new task')
@@ -67,13 +71,17 @@ def tasks_menu(message):
     back_to_main_menu_btn = types.KeyboardButton('back to main menu')
     markup1.row(add_task_btn, ramove_task_btn)
     markup1.row(back_to_main_menu_btn)
-
     bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup1)
+
+
 
 @bot.message_handler(regexp="add new task")
 def add_new_task(message):
     markup = types.ForceReply(selective=False)
     bot.send_message(message.chat.id, "Write new task:", reply_markup=markup)
+
+
+
 
 
 @bot.message_handler(content_types=["text"])
@@ -86,6 +94,9 @@ def replies(message):
         json_write("db.json", data)
     except:
         pass
+
+
+    
 bot.polling()
 
 
