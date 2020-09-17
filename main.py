@@ -10,31 +10,19 @@ from wrappers import *
 # All variables from this module start with `txt_` prefix
 '''
 from texts import *
-from user_profile_funcs import *
 
-bot = telebot.TeleBot("1312682990:AAERtIGXkjIMbgyKx__6Tu-fZqabVk9imCs")
+from user_profile_funcs import *
+from menus import *
+from config import *
 sessions = {}
 
-def main_menu(message):
-    markup     = types.ReplyKeyboardMarkup()
-    item_tasks = types.KeyboardButton('tasks')
-    markup.row(item_tasks)
 
-    msg = "Choose the option below:"
-    bot.send_message(message.chat.id, msg, reply_markup=markup)
-
-
-def task_close_menu(call):
-    markup           = types.ReplyKeyboardMarkup()
-    item_task_done   = types.KeyboardButton('done ✅')
-    item_task_failed = types.KeyboardButton('failed ⛔️')
-
-    markup.row(item_task_done, item_task_failed)
-    msg = "Task is: "
-    bot.send_message(call.message.chat.id, msg, reply_markup=markup)
-
-
-
+'''
+# Entry point. User types /start
+# 1. Initialize user`s profile if it`s new user.
+# 2. Sends welcome text.
+# 3. Sends main menu.
+'''
 @bot.message_handler(commands=['start'])
 def initialization(message):
     user_profile_init("db.json", message)
