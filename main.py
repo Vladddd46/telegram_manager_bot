@@ -88,6 +88,15 @@ def add_new_task(message):
     bot.send_message(message.chat.id, "Write new task:", reply_markup=markup)
 
 
+@bot.message_handler(regexp="done ✅")
+def task_done(message):
+    data = json_open("db.json")
+    print(sessions)
+    task_id = sessions[message.from_user.username][6:]
+    print(task_id)
+    data[message.from_user.username]["tasks"].pop(task_id)
+    json_write("db.json", data)
+    bot.send_message(message.chat.id, "Update tasks")
 
 
 
@@ -107,6 +116,7 @@ def replies(message):
 def query_handler(call):
 
     if call.data[0:6] == 'task: ':
+        sessions[call.message.chat.username] = call.data
         task_close_menu(call)
        
 bot.polling()
