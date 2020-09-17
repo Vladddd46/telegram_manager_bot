@@ -10,21 +10,10 @@ from wrappers import *
 # All variables from this module start with `txt_` prefix
 '''
 from texts import *
-
+from user_profile_funcs import *
 
 bot = telebot.TeleBot("1312682990:AAERtIGXkjIMbgyKx__6Tu-fZqabVk9imCs")
 sessions = {}
-
-'''
-* Initialize user profile (only if it is already not initialized)
-* when user starts bot (/start).
-'''
-def user_profile_init(database_file, message):
-    data = json_open(database_file)
-    if (message.from_user.username not in data):
-        data[message.from_user.username] = {"tasks": {}}
-    json_write(database_file, data)
-
 
 def main_menu(message):
     markup     = types.ReplyKeyboardMarkup()
@@ -91,13 +80,28 @@ def add_new_task(message):
 @bot.message_handler(regexp="done ✅")
 def task_done(message):
     data = json_open("db.json")
+
+    try:
+        task_id = sessions[message.from_user.username][6:]
+        data[message.from_user.username]["tasks"].pop(task_id)
+    except:
+        pass
+    json_write("db.json", data)
+
+    msg = "Good job👍\nNow task is moved to done-tasks list📑"
+    list_user_tasks(message)
+    bot.send_message(message.chat.id, msg)
+
+
+@bot.message_handler(regexp="failed ⛔️")
+def task_failed(message):
+    data = json_open("db.json")
     print(sessions)
     task_id = sessions[message.from_user.username][6:]
     print(task_id)
     data[message.from_user.username]["tasks"].pop(task_id)
     json_write("db.json", data)
     bot.send_message(message.chat.id, "Update tasks")
-
 
 
 @bot.message_handler(content_types=["text"])
