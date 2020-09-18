@@ -40,22 +40,26 @@ def list_user_tasks(message):
     tasks = data[message.from_user.username]["tasks"]
     markup = telebot.types.InlineKeyboardMarkup()
     for i in tasks:
-        button = telebot.types.InlineKeyboardButton(text=str(i) + ". " + tasks[i], callback_data="task: " + str(i))
+    
+        callback_dict = json.dumps({"task":i})
+        button = telebot.types.InlineKeyboardButton(text=str(i) + ". " + tasks[i], callback_data=callback_dict)
         markup.add(button)
+
     bot.send_message(message.chat.id, "Okey, there is list of your tasks:", reply_markup=markup)
+
 
 
 @bot.message_handler(regexp="tasks")
 def tasks_menu(message):
     list_user_tasks(message)
 
-    markup1               = types.ReplyKeyboardMarkup(row_width=2)
+    markup               = types.ReplyKeyboardMarkup(row_width=2)
     add_task_btn          = types.KeyboardButton('add new task')
     ramove_task_btn       = types.KeyboardButton('remove task')
     back_to_main_menu_btn = types.KeyboardButton('back to main menu')
-    markup1.row(add_task_btn, ramove_task_btn)
-    markup1.row(back_to_main_menu_btn)
-    bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup1)
+    markup.row(add_task_btn, ramove_task_btn)
+    markup.row(back_to_main_menu_btn)
+    bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup)
 
 
 
@@ -70,7 +74,7 @@ def task_done(message):
     data = json_open("db.json")
 
     try:
-        task_id = sessions[message.from_user.username][6:]
+        task_id = sessions[message.from_user.username]["selected task"]
         data[message.from_user.username]["tasks"].pop(task_id)
     except:
         pass
@@ -85,7 +89,7 @@ def task_done(message):
 def task_failed(message):
     data = json_open("db.json")
     print(sessions)
-    task_id = sessions[message.from_user.username][6:]
+    task_id = sessions[message.from_user.username]["selected task"]
     print(task_id)
     data[message.from_user.username]["tasks"].pop(task_id)
     json_write("db.json", data)
@@ -106,9 +110,12 @@ def replies(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def query_handler(call):
+    callback_data = json.loads(call.data)
 
-    if call.data[0:6] == 'task: ':
-        sessions[call.message.chat.username] = call.data
+    if 'task' in callback_data.keys():
+        if (call.message.chat.username not in sessions.keys()):
+            sessions[call.message.chat.username] = {}
+        sessions[call.message.chat.username]["selected task"] = callback_data["task"]
         task_close_menu(call)
        
 bot.polling()

@@ -2,6 +2,9 @@ import telebot
 from telebot import types
 from config import *
 
+'''
+# Sends main menu keyboard.
+'''
 def main_menu(message):
     markup     = types.ReplyKeyboardMarkup()
     item_tasks = types.KeyboardButton('tasks')
@@ -10,7 +13,9 @@ def main_menu(message):
     msg = "Choose the option below:"
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
-
+'''
+# Menu, which is showed when user clicks on task in inline keyboard. 
+'''
 def task_close_menu(call):
     markup           = types.ReplyKeyboardMarkup()
     item_task_done   = types.KeyboardButton('done ✅')
