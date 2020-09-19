@@ -31,23 +31,6 @@ def initialization(message):
 
 
 
-'''
-* lists user tasks in chat.
-* Sends them as inline keyboard.
-'''
-def list_user_tasks(message):
-    data = json_open("db.json")
-    tasks = data[message.from_user.username]["tasks"]
-    markup = telebot.types.InlineKeyboardMarkup()
-    for i in tasks:
-    
-        callback_dict = json.dumps({"task":i})
-        button = telebot.types.InlineKeyboardButton(text=str(i) + ". " + tasks[i], callback_data=callback_dict)
-        markup.add(button)
-
-    bot.send_message(message.chat.id, "Okey, there is list of your tasks:", reply_markup=markup)
-
-
 
 @bot.message_handler(regexp="tasks")
 def tasks_menu(message):
@@ -96,6 +79,7 @@ def task_failed(message):
     bot.send_message(message.chat.id, "Update tasks")
 
 
+
 @bot.message_handler(content_types=["text"])
 def replies(message):
     data = json_open("db.json")
@@ -112,10 +96,10 @@ def replies(message):
 def query_handler(call):
     callback_data = json.loads(call.data)
 
-    if 'task' in callback_data.keys():
+    if 'selected task' in callback_data.keys():
         if (call.message.chat.username not in sessions.keys()):
             sessions[call.message.chat.username] = {}
-        sessions[call.message.chat.username]["selected task"] = callback_data["task"]
+        sessions[call.message.chat.username]["selected task"] = callback_data["selected task"]
         task_close_menu(call)
        
 bot.polling()
