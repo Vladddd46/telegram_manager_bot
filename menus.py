@@ -20,7 +20,7 @@ def tasks_menu(message):
     markup                = types.ReplyKeyboardMarkup(row_width=2)
     add_task_btn          = types.KeyboardButton('add new task')
     ramove_task_btn       = types.KeyboardButton('remove task')
-    back_to_main_menu_btn = types.KeyboardButton('back to main menu')
+    back_to_main_menu_btn = types.KeyboardButton('🔙back to main menu')
 
     markup.row(add_task_btn, ramove_task_btn)
     markup.row(back_to_main_menu_btn)

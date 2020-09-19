@@ -51,6 +51,11 @@ def remove_task(message):
     markup = types.ForceReply(selective=False)
     bot.send_message(message.chat.id, "Write id of task you want to remove:", reply_markup=markup)
 
+@bot.message_handler(regexp=r"^🔙back to main menu$")
+def back_to_main_menu(message):
+    main_menu(message)
+
+
 
 @bot.message_handler(regexp=r"^done ✅$")
 def task_done(message):
