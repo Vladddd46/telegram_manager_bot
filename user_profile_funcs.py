@@ -24,9 +24,9 @@ def list_user_tasks(message):
     tasks = data[message.from_user.username]["tasks"]
 
     markup = telebot.types.InlineKeyboardMarkup()
-    for i in tasks:
-        callback_dict = json.dumps({"selected task": i}) # serealize dict into string to send it as callback data.
-        button = telebot.types.InlineKeyboardButton(text=str(i) + ". " + tasks[i], callback_data=callback_dict)
+    for task_name in tasks:
+        callback_dict = json.dumps({"selected task": task_name}) # serealize dict into string to send it as callback data.
+        button = telebot.types.InlineKeyboardButton(text=str(task_name) + ". " + tasks[task_name], callback_data=callback_dict)
         markup.add(button)
 
     if len(tasks) > 0:

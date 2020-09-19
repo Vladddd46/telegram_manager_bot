@@ -31,12 +31,11 @@ def initialization(message):
 
 
 
-
-@bot.message_handler(regexp="tasks")
-def tasks_menu(message):
+@bot.message_handler(regexp=r"^tasks$")
+def tasks_view(message):
     list_user_tasks(message)
 
-    markup               = types.ReplyKeyboardMarkup(row_width=2)
+    markup                = types.ReplyKeyboardMarkup(row_width=2)
     add_task_btn          = types.KeyboardButton('add new task')
     ramove_task_btn       = types.KeyboardButton('remove task')
     back_to_main_menu_btn = types.KeyboardButton('back to main menu')
