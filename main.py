@@ -31,27 +31,28 @@ def initialization(message):
 
 
 
+'''
+# Entry point to tasks functional.
+# Change main menu view to tasks view.
+'''    
 @bot.message_handler(regexp=r"^tasks$")
 def tasks_view(message):
     list_user_tasks(message)
+    tasks_menu(message)
 
-    markup                = types.ReplyKeyboardMarkup(row_width=2)
-    add_task_btn          = types.KeyboardButton('add new task')
-    ramove_task_btn       = types.KeyboardButton('remove task')
-    back_to_main_menu_btn = types.KeyboardButton('back to main menu')
-    markup.row(add_task_btn, ramove_task_btn)
-    markup.row(back_to_main_menu_btn)
-    bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup)
-
-
-
-@bot.message_handler(regexp="add new task")
-def add_new_task(message):
+@bot.message_handler(regexp=r"^add new task$")
+def add_task(message):
     markup = types.ForceReply(selective=False)
     bot.send_message(message.chat.id, "Write new task:", reply_markup=markup)
 
+@bot.message_handler(regexp=r"^remove task$")
+def remove_task(message):
+    list_user_tasks(message)
+    markup = types.ForceReply(selective=False)
+    bot.send_message(message.chat.id, "Write id of task you want to remove:", reply_markup=markup)
 
-@bot.message_handler(regexp="done ✅")
+
+@bot.message_handler(regexp=r"^done ✅$")
 def task_done(message):
     data = json_open("db.json")
 
@@ -67,7 +68,7 @@ def task_done(message):
     bot.send_message(message.chat.id, msg)
 
 
-@bot.message_handler(regexp="failed ⛔️")
+@bot.message_handler(regexp=r"^failed ⛔️$")
 def task_failed(message):
     data = json_open("db.json")
     print(sessions)

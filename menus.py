@@ -14,6 +14,19 @@ def main_menu(message):
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
 '''
+# Menu, which is showed when user typed `tasks`
+'''
+def tasks_menu(message):
+    markup                = types.ReplyKeyboardMarkup(row_width=2)
+    add_task_btn          = types.KeyboardButton('add new task')
+    ramove_task_btn       = types.KeyboardButton('remove task')
+    back_to_main_menu_btn = types.KeyboardButton('back to main menu')
+
+    markup.row(add_task_btn, ramove_task_btn)
+    markup.row(back_to_main_menu_btn)
+    bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup)
+
+'''
 # Menu, which is showed when user clicks on task in inline keyboard. 
 '''
 def task_close_menu(call):
@@ -24,3 +37,4 @@ def task_close_menu(call):
     markup.row(item_task_done, item_task_failed)
     msg = "Task is: "
     bot.send_message(call.message.chat.id, msg, reply_markup=markup)
+
