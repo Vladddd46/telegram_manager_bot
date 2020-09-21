@@ -33,3 +33,22 @@ def list_user_tasks(message):
     	bot.send_message(message.chat.id, "Okey, there is list of your tasks:", reply_markup=markup)
     else:
     	bot.send_message(message.chat.id, "You don`t have any tasks to do yet.💆‍♂️")
+
+
+
+'''
+# Removes task from data[username][tasks] dict by task_id.
+# Adds task with task_id to data[username][done tasks] list.
+# Is called when user types `done ✅`
+'''
+def move_task_to_done_list(message, task_id):
+    data = json_open("db.json")
+    task = data[message.from_user.username]["tasks"][task_id]
+    data[message.from_user.username]["tasks"].pop(task_id)
+    if "done tasks" not in data[message.from_user.username].keys():
+        data[message.from_user.username]["done tasks"] = []
+    data[message.from_user.username]["done tasks"].append(task)
+    json_write("db.json", data)
+
+
+

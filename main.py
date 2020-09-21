@@ -57,20 +57,28 @@ def back_to_main_menu(message):
 
 
 
-@bot.message_handler(regexp=r"^done ✅$")
-def task_done(message):
+'''
+# Removes task from data[username][tasks] dict by task_id.
+# Adds task with task_id to data[username][done tasks] list.
+# Is called when user types `done ✅`
+'''
+def move_task_to_done_list(message, task_id):
     data = json_open("db.json")
-
-    try:
-        task_id = sessions[message.from_user.username]["selected task"]
-        data[message.from_user.username]["tasks"].pop(task_id)
-    except:
-        pass
+    task = data[message.from_user.username]["tasks"][task_id]
+    data[message.from_user.username]["tasks"].pop(task_id)
+    if "done tasks" not in data[message.from_user.username].keys():
+        data[message.from_user.username]["done tasks"] = []
+    data[message.from_user.username]["done tasks"].append(task)
     json_write("db.json", data)
 
-    msg = "Good job👍\nNow task is moved to done-tasks list📑"
+@bot.message_handler(regexp=r"^done ✅$")
+def task_done(message):
+    task_id = sessions[message.from_user.username]["selected task"]
+    move_task_to_done_list(message, task_id)
     list_user_tasks(message)
+    msg = "Good job👍\nNow task is moved to done-tasks list📑"
     bot.send_message(message.chat.id, msg)
+    tasks_menu(message)
 
 
 @bot.message_handler(regexp=r"^failed ⛔️$")
