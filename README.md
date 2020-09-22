@@ -11,3 +11,12 @@
   <li>Marking task as done/failed.</li>
   <li>Show lists with done/failed tasks.</li>
  </ul>
+ 
+ <h2>Quickstart</h2>
+```diff
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@
+```
