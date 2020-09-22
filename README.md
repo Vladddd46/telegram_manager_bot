@@ -14,5 +14,5 @@
  
  <h2>Quickstart</h2>
  
-![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) `pip3 install -r requirements.txt`
-![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) `python3 main.py`
+`pip3 install -r requirements.txt`
+`python3 main.py`
