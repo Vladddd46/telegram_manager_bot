@@ -1,21 +1,24 @@
 import telebot
-from telebot import types
+from   telebot import types
+
 from json_api.json_api import *
-
-
-'''
-# texts module contains variables with texts sended by bot.
-# This is done to simplify editing of texts.
-# All variables from this module start with `txt_` prefix
-'''
-from config.texts import *
-from config.config import *
+from config.texts      import *
+from config.config     import *
 
 from user_profile_funcs import *
 from menus import *
 
-sessions = {}
 
+'''
+# Creates database file, if it does not exist.
+'''
+def database_init(name):
+    try:
+        data = json_open(name)
+    except:
+        data = {}
+        json_write(name, data)
+database_init("db.json")
 
 '''
 # Entry point. User types /start
@@ -143,7 +146,7 @@ def query_handler(call):
         if (call.message.chat.username not in sessions.keys()):
             sessions[call.message.chat.username] = {}
         sessions[call.message.chat.username]["selected task"] = callback_data["selected task"]
-        task_close_menu(call)
+        task_selected_menu(call)
        
 bot.polling()
 

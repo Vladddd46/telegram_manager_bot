@@ -13,6 +13,10 @@ def main_menu(message):
     msg = "Choose the option below:"
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
+    if message.from_user.username not in sessions.keys():
+        sessions[message.from_user.username] = {}
+    sessions[message.from_user.username]["current menu"] = "main_menu"
+
 '''
 # Menu, which is showed when user typed `tasks`
 '''
@@ -30,11 +34,14 @@ def tasks_menu(message):
     markup.row(done_list_btn, failed_list_btn)
     markup.row(back_to_main_menu_btn)
     bot.send_message(message.chat.id, "Choose the option below:", reply_markup=markup)
+    if message.from_user.username not in sessions.keys():
+        sessions[message.from_user.username] = {}
+    sessions[message.from_user.username]["current menu"] = "tasks_menu"
 
 '''
 # Menu, which is showed when user clicks on task in inline keyboard. 
 '''
-def task_close_menu(call):
+def task_selected_menu(call):
     markup             = types.ReplyKeyboardMarkup()
     item_task_done     = types.KeyboardButton('done ✅')
     item_task_failed   = types.KeyboardButton('failed ⛔️')
@@ -44,4 +51,7 @@ def task_close_menu(call):
     markup.row(back_to_tasks_menu)
     msg = "Task is: "
     bot.send_message(call.message.chat.id, msg, reply_markup=markup)
+    if call.message.from_user.username not in sessions.keys():
+        sessions[call.message.from_user.username] = {}
+    sessions[call.message.from_user.username]["current menu"] = "task_selected_menu"
 
