@@ -7,17 +7,8 @@ from config.config     import *
 
 from user_profile_funcs import *
 from menus import *
+from force_replies import *
 
-
-'''
-# Creates database file, if it does not exist.
-'''
-def database_init(name):
-    try:
-        data = json_open(name)
-    except:
-        data = {}
-        json_write(name, data)
 database_init("db.json")
 
 '''
@@ -45,11 +36,15 @@ def tasks_view(message):
 
 @bot.message_handler(regexp=r"^add new task$")
 def add_task(message):
+    if protection(message, "tasks_menu"):
+        return;
     markup = types.ForceReply(selective=False)
     bot.send_message(message.chat.id, "Write new task:", reply_markup=markup)
 
 @bot.message_handler(regexp=r"^remove task$")
 def remove_task(message):
+    if protection(message, "tasks_menu"):
+        return;
     list_user_tasks(message)
     markup = types.ForceReply(selective=False)
     bot.send_message(message.chat.id, "Write id of task you want to remove:", reply_markup=markup)
@@ -64,23 +59,35 @@ def back_to_tasks_menu(message):
 
 @bot.message_handler(regexp=r"^🗒show tasks list🗒$")
 def show_tasks_list(message):
+    if protection(message, "tasks_menu"):
+        return;
     list_user_tasks(message)
+
+
 
 '''
 # Sends list with all done tasks to user.
 '''
 @bot.message_handler(regexp=r"^done list✅$")
 def done_list_show(message):
+    if protection(message, "tasks_menu"):
+        return;
     list_tasks_from_list(message, "done tasks")
     tasks_menu(message)
+
+
 
 '''
 # Sends list with all failed tasks to user.
 '''
 @bot.message_handler(regexp=r"^failed list⛔️$")
 def done_list_show(message):
+    if protection(message, "tasks_menu"):
+        return;
     list_tasks_from_list(message, "failed tasks")
     tasks_menu(message)
+
+
 
 '''
 # Moves session[username]["selected task"] from data[username]["tasks"] 
@@ -88,6 +95,8 @@ def done_list_show(message):
 '''
 @bot.message_handler(regexp=r"^done ✅$")
 def task_done(message):
+    if protection(message, "task_selected_menu"):
+        return;
     task_id = sessions[message.from_user.username]["selected task"]
     move_task_to_another_list(message, task_id, "tasks", "done tasks")
     msg = "Good job👍\nNow task is moved to done-tasks list📑"
@@ -95,12 +104,16 @@ def task_done(message):
     list_user_tasks(message)
     tasks_menu(message)
 
+
+
 '''
 # Moves session[username]["selected task"] from data[username]["tasks"] 
 # list to data[username]["failed list"].
 '''
 @bot.message_handler(regexp=r"^failed ⛔️$")
 def task_failed(message):
+    if protection(message, "task_selected_menu"):
+        return;
     task_id = sessions[message.from_user.username]["selected task"]
     move_task_to_another_list(message, task_id, "tasks", "failed tasks")
     msg = "😢Task is failed😢\nNow task is moved to failed-tasks list📑\n"
@@ -110,43 +123,24 @@ def task_failed(message):
 
 
 
-
 @bot.message_handler(content_types=["text"])
-def replies(message):
-    data = json_open("db.json")
+def text(message):
+    force_replies(message)
 
-    if message.reply_to_message != None and message.reply_to_message.text == "Write new task:":
-        task_id = len(data[message.from_user.username]["tasks"]) + 1
-        data[message.from_user.username]["tasks"][task_id]  = message.text
-        json_write("db.json", data)
-        list_user_tasks(message)
-        tasks_menu(message)
+    
 
-    if message.reply_to_message != None and message.reply_to_message.text == "Write id of task you want to remove:":
-        task_id = message.text
-        if "tasks" not in data[message.from_user.username].keys():
-            data[message.from_user.username]["tasks"] = {}
-        if task_id in data[message.from_user.username]["tasks"].keys():
-            data[message.from_user.username]["tasks"].pop(task_id)
-            msg = "🔻Task is successfully removed🔻"
-        else:
-            msg = "🔻There is no task with such id🔻"
-        json_write("db.json", data)
-        id_update(message, "tasks")
-        bot.send_message(message.chat.id, msg)
-        list_user_tasks(message)
-        tasks_menu(message)
-
-
+'''
+# Notice: All calback data is sent as serealized in json dict.
+# Firstly it`s needed to deserealize callback data and then do some logic.
+'''
 @bot.callback_query_handler(func=lambda call: True)
 def query_handler(call):
-    callback_data = json.loads(call.data)
+    callback_data = json.loads(call.data) # deserealization.
 
     if 'selected task' in callback_data.keys():
         if (call.message.chat.username not in sessions.keys()):
             sessions[call.message.chat.username] = {}
         sessions[call.message.chat.username]["selected task"] = callback_data["selected task"]
         task_selected_menu(call)
-       
-bot.polling()
 
+bot.polling()

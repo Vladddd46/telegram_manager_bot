@@ -2,6 +2,22 @@ import telebot
 from telebot import types
 from config.config import *
 
+
+
+'''
+# Determines user`s current menu and protecs from inappropriate logic.
+# If command is called from not appropriate menu(menu_name), returns 1,
+# otherwise returns 0.
+'''
+def protection(message, menu_name):
+    if message.from_user.username not in sessions.keys():
+        sessions[message.from_user.username] = {}
+    if sessions[message.from_user.username]["current menu"] != menu_name:
+        return 1
+    return 0
+
+
+
 '''
 # Sends main menu keyboard.
 '''
@@ -51,7 +67,7 @@ def task_selected_menu(call):
     markup.row(back_to_tasks_menu)
     msg = "Task is: "
     bot.send_message(call.message.chat.id, msg, reply_markup=markup)
-    if call.message.from_user.username not in sessions.keys():
-        sessions[call.message.from_user.username] = {}
-    sessions[call.message.from_user.username]["current menu"] = "task_selected_menu"
+    if call.from_user.username not in sessions.keys():
+        sessions[call.from_user.username] = {}
+    sessions[call.from_user.username]["current menu"] = "task_selected_menu"
 

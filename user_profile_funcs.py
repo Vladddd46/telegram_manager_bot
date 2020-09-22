@@ -4,6 +4,12 @@ from telebot import types
 from config.config import *
 
 '''
+# Contains functions for manipulating
+# with user`s profile.
+'''
+
+
+'''
 * Initialize user profile (only if it is already not initialized)
 * when user starts bot (/start).
 '''
