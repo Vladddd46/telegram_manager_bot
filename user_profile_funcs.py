@@ -30,11 +30,24 @@ def list_user_tasks(message):
         markup.add(button)
 
     if len(tasks) > 0:
-    	bot.send_message(message.chat.id, "Okey, there is list of your tasks:", reply_markup=markup)
+    	bot.send_message(message.chat.id, "📌Okey, there is list of your tasks.📌\n⚙️Click on task to edit it⚙️", reply_markup=markup)
     else:
     	bot.send_message(message.chat.id, "You don`t have any tasks to do yet.💆‍♂️")
 
 
+'''
+# Sends user tasks from list_name.
+'''
+def list_tasks_from_list(message, list_name):
+    data = json_open("db.json")
+    if list_name in data[message.from_user.username].keys() and len(data[message.from_user.username][list_name]) != 0:
+        tasks = data[message.from_user.username][list_name]
+        msg = list_name.capitalize() + ":\n"
+        for i in tasks:
+            msg += i + ". " + tasks[i] + "\n"
+    else:
+        msg = "💁" + list_name.capitalize() + " list is empty" +"💁‍♂️"
+    bot.send_message(message.chat.id, msg)
 
 '''
 # Moves task with task_id from data[username][from_list] 

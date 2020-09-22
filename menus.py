@@ -19,12 +19,17 @@ def main_menu(message):
 def tasks_menu(message):
     markup                = types.ReplyKeyboardMarkup(row_width=2)
     add_task_btn          = types.KeyboardButton('add new task')
-    ramove_task_btn       = types.KeyboardButton('remove task')
+    remove_task_btn       = types.KeyboardButton('remove task')
+    show_tasks_btn        = types.KeyboardButton('🗒show tasks list🗒')
     back_to_main_menu_btn = types.KeyboardButton('🔙back to main menu')
+    done_list_btn         = types.KeyboardButton('done list✅')
+    failed_list_btn       = types.KeyboardButton('failed list⛔️')
 
-    markup.row(add_task_btn, ramove_task_btn)
+    markup.row(add_task_btn, remove_task_btn)
+    markup.row(show_tasks_btn)
+    markup.row(done_list_btn, failed_list_btn)
     markup.row(back_to_main_menu_btn)
-    bot.send_message(message.chat.id, "Click on task to edit it\nTo add/remove new task choose the option below.\n⬇️⬇️⬇️⬇️⬇️", reply_markup=markup)
+    bot.send_message(message.chat.id, "Choose the option below:", reply_markup=markup)
 
 '''
 # Menu, which is showed when user clicks on task in inline keyboard. 

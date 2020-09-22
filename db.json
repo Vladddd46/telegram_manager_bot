@@ -1,13 +1,13 @@
 {
   "vladddd46": {
-    "tasks": {},
+    "tasks": {
+      "1": "x"
+    },
     "done tasks": {
-      "0": "x",
-      "1": "y"
+      "1": "z"
     },
     "failed tasks": {
-      "0": "z",
-      "1": "one"
+      "1": "y"
     }
   }
 }

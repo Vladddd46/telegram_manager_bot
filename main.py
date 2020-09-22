@@ -55,6 +55,25 @@ def remove_task(message):
 def back_to_main_menu(message):
     main_menu(message)
 
+@bot.message_handler(regexp=r"^🗒show tasks list🗒$")
+def back_to_main_menu(message):
+    list_user_tasks(message)
+
+'''
+# Sends list with all done tasks to user.
+'''
+@bot.message_handler(regexp=r"^done list✅$")
+def done_list_show(message):
+    list_tasks_from_list(message, "done tasks")
+    tasks_menu(message)
+
+'''
+# Sends list with all failed tasks to user.
+'''
+@bot.message_handler(regexp=r"^failed list⛔️$")
+def done_list_show(message):
+    list_tasks_from_list(message, "failed tasks")
+    tasks_menu(message)
 
 '''
 # Moves session[username]["selected task"] from data[username]["tasks"] 
@@ -64,9 +83,9 @@ def back_to_main_menu(message):
 def task_done(message):
     task_id = sessions[message.from_user.username]["selected task"]
     move_task_to_another_list(message, task_id, "tasks", "done tasks")
-    list_user_tasks(message)
     msg = "Good job👍\nNow task is moved to done-tasks list📑"
     bot.send_message(message.chat.id, msg)
+    list_user_tasks(message)
     tasks_menu(message)
 
 '''
@@ -77,10 +96,12 @@ def task_done(message):
 def task_failed(message):
     task_id = sessions[message.from_user.username]["selected task"]
     move_task_to_another_list(message, task_id, "tasks", "failed tasks")
-    list_user_tasks(message)
     msg = "😢Task is failed😢\nNow task is moved to failed-tasks list📑\n"
     bot.send_message(message.chat.id, msg)
+    list_user_tasks(message)
     tasks_menu(message)
+
+
 
 
 
@@ -95,6 +116,8 @@ def replies(message):
             task_id = len(data[message.from_user.username]["tasks"]) + 1
             data[message.from_user.username]["tasks"][task_id]  = message.text
         json_write("db.json", data)
+        list_user_tasks(message)
+        tasks_menu(message)
     except:
         pass
 
