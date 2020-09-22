@@ -55,8 +55,12 @@ def remove_task(message):
 def back_to_main_menu(message):
     main_menu(message)
 
+@bot.message_handler(regexp=r"^🔙back to tasks menu$")
+def back_to_tasks_menu(message):
+    tasks_menu(message)
+
 @bot.message_handler(regexp=r"^🗒show tasks list🗒$")
-def back_to_main_menu(message):
+def show_tasks_list(message):
     list_user_tasks(message)
 
 '''
@@ -104,10 +108,6 @@ def task_failed(message):
 
 
 
-
-
-
-
 @bot.message_handler(content_types=["text"])
 def replies(message):
     data = json_open("db.json")
@@ -129,6 +129,7 @@ def replies(message):
         else:
             msg = "🔻There is no task with such id🔻"
         json_write("db.json", data)
+        id_update(message, "tasks")
         bot.send_message(message.chat.id, msg)
         list_user_tasks(message)
         tasks_menu(message)

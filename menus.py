@@ -35,11 +35,13 @@ def tasks_menu(message):
 # Menu, which is showed when user clicks on task in inline keyboard. 
 '''
 def task_close_menu(call):
-    markup           = types.ReplyKeyboardMarkup()
-    item_task_done   = types.KeyboardButton('done ✅')
-    item_task_failed = types.KeyboardButton('failed ⛔️')
+    markup             = types.ReplyKeyboardMarkup()
+    item_task_done     = types.KeyboardButton('done ✅')
+    item_task_failed   = types.KeyboardButton('failed ⛔️')
+    back_to_tasks_menu = types.KeyboardButton('🔙back to tasks menu')
 
     markup.row(item_task_done, item_task_failed)
+    markup.row(back_to_tasks_menu)
     msg = "Task is: "
     bot.send_message(call.message.chat.id, msg, reply_markup=markup)
 

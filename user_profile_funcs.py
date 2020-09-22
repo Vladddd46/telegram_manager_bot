@@ -35,6 +35,7 @@ def list_user_tasks(message):
     	bot.send_message(message.chat.id, "You don`t have any tasks to do yet.💆‍♂️")
 
 
+
 '''
 # Sends user tasks from list_name.
 '''
@@ -49,6 +50,24 @@ def list_tasks_from_list(message, list_name):
         msg = "💁" + list_name.capitalize() + " list is empty" +"💁‍♂️"
     bot.send_message(message.chat.id, msg)
 
+
+
+'''
+# Updates ids in data[username][list_name].
+# It`s needed, if some tasks were removed from list_name
+'''
+def id_update(message, list_name):
+    data = json_open("db.json")
+    dict_to_update = data[message.from_user.username][list_name]
+    new_dict = {}
+    for i in dict_to_update:
+        new_id           = len(new_dict) + 1
+        new_dict[new_id] = dict_to_update[i]
+    data[message.from_user.username][list_name] = new_dict
+    json_write("db.json", data)
+
+
+
 '''
 # Moves task with task_id from data[username][from_list] 
 # to data[username][to_list].
@@ -62,6 +81,7 @@ def move_task_to_another_list(message, task_id, from_list, to_list):
     new_id = len(data[message.from_user.username][to_list]) + 1
     data[message.from_user.username][to_list][new_id] = task
     json_write("db.json", data)
+    id_update(message, from_list)
 
 
 
