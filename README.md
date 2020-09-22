@@ -7,7 +7,7 @@
 <ul>
   <li>Show list with unfinished tasks.</li>
   <li>Adding new tasks</li>
-  <li><Removing tasks/li>
+  <li>Removing tasks</li>
   <li>Marking task as done/failed</li>
   <li>Show done/failed lists</li>
  </ul>
