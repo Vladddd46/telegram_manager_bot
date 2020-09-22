@@ -111,15 +111,27 @@ def task_failed(message):
 @bot.message_handler(content_types=["text"])
 def replies(message):
     data = json_open("db.json")
-    try:
-        if message.reply_to_message.text == "Write new task:":
-            task_id = len(data[message.from_user.username]["tasks"]) + 1
-            data[message.from_user.username]["tasks"][task_id]  = message.text
+
+    if message.reply_to_message != None and message.reply_to_message.text == "Write new task:":
+        task_id = len(data[message.from_user.username]["tasks"]) + 1
+        data[message.from_user.username]["tasks"][task_id]  = message.text
         json_write("db.json", data)
         list_user_tasks(message)
         tasks_menu(message)
-    except:
-        pass
+
+    if message.reply_to_message != None and message.reply_to_message.text == "Write id of task you want to remove:":
+        task_id = message.text
+        if "tasks" not in data[message.from_user.username].keys():
+            data[message.from_user.username]["tasks"] = {}
+        if task_id in data[message.from_user.username]["tasks"].keys():
+            data[message.from_user.username]["tasks"].pop(task_id)
+            msg = "🔻Task is successfully removed🔻"
+        else:
+            msg = "🔻There is no task with such id🔻"
+        json_write("db.json", data)
+        bot.send_message(message.chat.id, msg)
+        list_user_tasks(message)
+        tasks_menu(message)
 
 
 @bot.callback_query_handler(func=lambda call: True)
