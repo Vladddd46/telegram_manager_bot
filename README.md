@@ -11,8 +11,12 @@
   <li>Marking task as done/failed.</li>
   <li>Show lists with done/failed tasks.</li>
  </ul>
- 
+
  <h2>Quickstart</h2>
  
 1.`pip3 install -r requirements.txt`<br>
 2.`python3 main.py`
+
+<h2>Overview</h2>
+
+![ezgif com-video-to-gif](https://user-images.githubusercontent.com/11888485/93940069-8897d500-fd34-11ea-8f41-2c8c952a4aef.gif)
