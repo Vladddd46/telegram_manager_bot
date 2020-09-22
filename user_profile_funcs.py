@@ -1,7 +1,7 @@
-from wrappers import *
+from json_api.json_api import *
 import telebot
 from telebot import types
-from config import *
+from config.config import *
 
 '''
 * Initialize user profile (only if it is already not initialized)

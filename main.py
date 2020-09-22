@@ -1,7 +1,6 @@
 import telebot
 from telebot import types
-import json
-from wrappers import *
+from json_api.json_api import *
 
 
 '''
@@ -9,11 +8,12 @@ from wrappers import *
 # This is done to simplify editing of texts.
 # All variables from this module start with `txt_` prefix
 '''
-from texts import *
+from config.texts import *
+from config.config import *
 
 from user_profile_funcs import *
 from menus import *
-from config import *
+
 sessions = {}
 
 

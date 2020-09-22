@@ -1,6 +1,6 @@
 import telebot
 from telebot import types
-from config import *
+from config.config import *
 
 '''
 # Sends main menu keyboard.
