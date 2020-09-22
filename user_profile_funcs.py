@@ -37,18 +37,19 @@ def list_user_tasks(message):
 
 
 '''
-# Removes task from data[username][tasks] dict by task_id.
-# Adds task with task_id to data[username][done tasks] list.
-# Is called when user types `done ✅`
+# Moves task with task_id from data[username][from_list] 
+# to data[username][to_list].
 '''
-def move_task_to_done_list(message, task_id):
+def move_task_to_another_list(message, task_id, from_list, to_list):
     data = json_open("db.json")
-    task = data[message.from_user.username]["tasks"][task_id]
-    data[message.from_user.username]["tasks"].pop(task_id)
-    if "done tasks" not in data[message.from_user.username].keys():
-        data[message.from_user.username]["done tasks"] = []
-    data[message.from_user.username]["done tasks"].append(task)
+    task = data[message.from_user.username][from_list][task_id]
+    data[message.from_user.username][from_list].pop(task_id)
+    if to_list not in data[message.from_user.username].keys():
+        data[message.from_user.username][to_list] = {}
+    new_id = len(data[message.from_user.username][to_list]) + 1
+    data[message.from_user.username][to_list][new_id] = task
     json_write("db.json", data)
 
 
 
+    

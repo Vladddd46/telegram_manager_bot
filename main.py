@@ -55,25 +55,35 @@ def remove_task(message):
 def back_to_main_menu(message):
     main_menu(message)
 
+
+'''
+# Moves session[username]["selected task"] from data[username]["tasks"] 
+# list to data[username]["done list"].
+'''
 @bot.message_handler(regexp=r"^done ✅$")
 def task_done(message):
     task_id = sessions[message.from_user.username]["selected task"]
-    move_task_to_done_list(message, task_id)
+    move_task_to_another_list(message, task_id, "tasks", "done tasks")
     list_user_tasks(message)
     msg = "Good job👍\nNow task is moved to done-tasks list📑"
     bot.send_message(message.chat.id, msg)
     tasks_menu(message)
 
-
+'''
+# Moves session[username]["selected task"] from data[username]["tasks"] 
+# list to data[username]["failed list"].
+'''
 @bot.message_handler(regexp=r"^failed ⛔️$")
 def task_failed(message):
-    data = json_open("db.json")
-    print(sessions)
     task_id = sessions[message.from_user.username]["selected task"]
-    print(task_id)
-    data[message.from_user.username]["tasks"].pop(task_id)
-    json_write("db.json", data)
-    bot.send_message(message.chat.id, "Update tasks")
+    move_task_to_another_list(message, task_id, "tasks", "failed tasks")
+    list_user_tasks(message)
+    msg = "😢Task is failed😢\nNow task is moved to failed-tasks list📑\n"
+    bot.send_message(message.chat.id, msg)
+    tasks_menu(message)
+
+
+
 
 
 
