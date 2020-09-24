@@ -11,7 +11,13 @@
   <li>Marking task as done/failed.</li>
   <li>Show lists with done/failed tasks.</li>
  </ul>
-
+<h2>TODO</h2>
+<ul>
+  <li>birthday notifications</li>
+  <li>other notifications</li>
+  <li>different languages support</li>
+  <li>quick tutorial, while start</li>
+  </ul>
  <h2>Quickstart</h2>
  
 1.`pip3 install -r requirements.txt`<br>
