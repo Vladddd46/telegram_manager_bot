@@ -10,9 +10,10 @@ from config.config import *
 # otherwise returns 0.
 '''
 def protection(message, menu_name):
-    if message.from_user.username not in sessions.keys():
-        sessions[message.from_user.username] = {}
-    if sessions[message.from_user.username]["current menu"] != menu_name:
+    user = str(message.chat.id)
+    if user not in sessions.keys():
+        sessions[user] = {}
+    if sessions[user]["current menu"] != menu_name:
         return 1
     return 0
 
@@ -29,9 +30,10 @@ def main_menu(message):
     msg = "Choose the option below:"
     bot.send_message(message.chat.id, msg, reply_markup=markup)
 
-    if message.from_user.username not in sessions.keys():
-        sessions[message.from_user.username] = {}
-    sessions[message.from_user.username]["current menu"] = "main_menu"
+    user = str(message.chat.id)
+    if user not in sessions.keys():
+        sessions[user] = {}
+    sessions[user]["current menu"] = "main_menu"
 
 '''
 # Menu, which is showed when user typed `tasks`
@@ -50,9 +52,10 @@ def tasks_menu(message):
     markup.row(done_list_btn, failed_list_btn)
     markup.row(back_to_main_menu_btn)
     bot.send_message(message.chat.id, "Choose the option below:", reply_markup=markup)
-    if message.from_user.username not in sessions.keys():
-        sessions[message.from_user.username] = {}
-    sessions[message.from_user.username]["current menu"] = "tasks_menu"
+    user = str(message.chat.id)
+    if user not in sessions.keys():
+        sessions[user] = {}
+    sessions[user]["current menu"] = "tasks_menu"
 
 '''
 # Menu, which is showed when user clicks on task in inline keyboard. 
@@ -67,7 +70,8 @@ def task_selected_menu(call):
     markup.row(back_to_tasks_menu)
     msg = "Task is: "
     bot.send_message(call.message.chat.id, msg, reply_markup=markup)
-    if call.from_user.username not in sessions.keys():
-        sessions[call.from_user.username] = {}
-    sessions[call.from_user.username]["current menu"] = "task_selected_menu"
+    user = str(call.message.chat.id)
+    if user not in sessions.keys():
+        sessions[user] = {}
+    sessions[user]["current menu"] = "task_selected_menu"
 

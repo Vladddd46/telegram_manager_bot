@@ -97,7 +97,8 @@ def done_list_show(message):
 def task_done(message):
     if protection(message, "task_selected_menu"):
         return;
-    task_id = sessions[message.from_user.username]["selected task"]
+    user = str(message.chat.id)
+    task_id = sessions[user]["selected task"]
     move_task_to_another_list(message, task_id, "tasks", "done tasks")
     msg = "Good job👍\nNow task is moved to done-tasks list📑"
     bot.send_message(message.chat.id, msg)
@@ -114,7 +115,8 @@ def task_done(message):
 def task_failed(message):
     if protection(message, "task_selected_menu"):
         return;
-    task_id = sessions[message.from_user.username]["selected task"]
+    user = str(message.chat.id)
+    task_id = sessions[user]["selected task"]
     move_task_to_another_list(message, task_id, "tasks", "failed tasks")
     msg = "😢Task is failed😢\nNow task is moved to failed-tasks list📑\n"
     bot.send_message(message.chat.id, msg)
@@ -136,11 +138,11 @@ def text(message):
 @bot.callback_query_handler(func=lambda call: True)
 def query_handler(call):
     callback_data = json.loads(call.data) # deserealization.
-
+    user = str(call.message.chat.id)
     if 'selected task' in callback_data.keys():
         if (call.message.chat.username not in sessions.keys()):
-            sessions[call.message.chat.username] = {}
-        sessions[call.message.chat.username]["selected task"] = callback_data["selected task"]
+            sessions[user] = {}
+        sessions[user]["selected task"] = callback_data["selected task"]
         task_selected_menu(call)
 
 bot.polling()

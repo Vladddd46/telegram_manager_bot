@@ -15,8 +15,9 @@ from telebot import types
 # adds task to data[username]["tasks"]
 def new_task(message):
     data    = json_open("db.json")
-    task_id = len(data[message.from_user.username]["tasks"]) + 1
-    data[message.from_user.username]["tasks"][task_id]  = message.text
+    user    = str(message.chat.id)
+    task_id = len(data[user]["tasks"]) + 1
+    data[user]["tasks"][task_id]  = message.text
     json_write("db.json", data)
     list_user_tasks(message)
     tasks_menu(message)
@@ -25,12 +26,13 @@ def new_task(message):
 
 # removes task from data[username]["tasks"]
 def rm_task(message):
-    data = json_open("db.json")
+    data    = json_open("db.json")
     task_id = message.text
-    if "tasks" not in data[message.from_user.username].keys():
-        data[message.from_user.username]["tasks"] = {}
-    if task_id in data[message.from_user.username]["tasks"].keys():
-        data[message.from_user.username]["tasks"].pop(task_id)
+    user    = str(message.chat.id)
+    if "tasks" not in data[user].keys():
+        data[user]["tasks"] = {}
+    if task_id in data[user]["tasks"].keys():
+        data[user]["tasks"].pop(task_id)
         msg = "🔻Task is successfully removed🔻"
     else:
         msg = "🔻There is no task with such id🔻"
